@@ -3,259 +3,213 @@
 
 ## Overview
 
-This application helps users organize files from a selected directory by reading file metadata (creation date) and moving these files into newly created folders based on year, month, or day, according to user-selected options. The app provides an interface to open the OS file explorer, and checks available space before moving files. The MVP targets Windows, with plans for cross-platform support.
+This application provides a desktop GUI for organizing files from a source directory into structured destination folders based on file metadata (creation date). The application follows an event-driven, highly decoupled architecture to maximize modularity and extensibility. Users can select directories, configure organization settings, and execute file operations with real-time progress tracking and comprehensive error handling.
+
+---
+
+## User Flow (MVP)
+
+1. **Application Launch** → Main window opens
+2. **Source Selection** → User selects source directory containing files to organize
+3. **Destination Selection** → User selects target directory for organized files
+4. **Status Validation** → Status bar shows "Ready" (green) when both directories are selected and validated
+5. **Organization Configuration** → *Future feature: Templates and naming conventions*
+6. **Begin Process** → User clicks "Begin" button
+7. **Confirmation Modal** → User reviews configuration and confirms or cancels
+8. **Progress Tracking** → Real-time progress bar with file count (processed/total)
+9. **Completion/Error Handling** → Results dialog shows success or error details
+
+---
+
+## Architecture Overview
+
+The application uses a **hybrid event-driven architecture** combining:
+- **Event-Driven Communication** for maximum component decoupling
+- **Command Pattern** for file operations with undo/retry capabilities
+- **Observer Pattern** for real-time progress and status updates
+- **Strategy Pattern** for future organization template extensibility
+
+### Core Principles:
+- **Maximum Decoupling**: Each component operates independently
+- **Event-Based Communication**: Components communicate via publish/subscribe events
+- **Testability**: Real file system testing with backed-up data
+- **Extensibility**: Template system for future organization strategies
 
 ---
 
 ## Features (MVP)
 
-1. **Open OS-specific File Explorer**
-   - Open Windows File Explorer at a selected path.
+### Core Functionality
+1. **Directory Selection**
+   - Source directory picker with validation
+   - Destination directory picker with validation
+   - Real-time status updates
 
-2. **Read File Metadata**
-   - Read creation date, file size, and file extension/type for each file in the source directory.
+2. **File Organization**
+   - Date-based folder creation (Year, Year/Month, Year/Month/Day)
+   - Metadata-driven file placement
+   - Batch file operations with progress tracking
 
-3. **User Directory Selection**
-   - User selects a source directory containing files to organize.
-   - User selects a target directory for organized files.
+3. **Validation & Safety**
+   - Disk space verification before operations
+   - File accessibility and permission checks
+   - Basic file integrity validation
 
-4. **Create Organizational Folders**
-   - Create new folders in the target directory based on file creation date.
-   - Folder structure options:
-     - By year
-     - By year/month
-     - By year/month/day
+4. **Progress & Status Management**
+   - Real-time progress tracking (processed/total files)
+   - Status bar with visual indicators (Ready/Processing/Error)
+   - Comprehensive error reporting and recovery
 
-5. **Move Files**
-   - Move files from the source directory into appropriate folders in the target directory.
-   - Support common media types (.mp3, .wav, .mp4, etc.).
+5. **Error Handling**
+   - **Critical Errors** (disk space, destination conflicts): Stop entire process
+   - **Non-Critical Errors** (corrupted files): Save for retry, continue with remaining files
+   - User choice for retry/skip failed operations
 
-6. **Disk Space Check**
-   - Ensure sufficient free space in the target directory before moving files.
-
-7. **Verify Files Are Not Corrupt**
-   - Perform basic integrity checks (e.g., file size > 0).
-   - Advanced corruption checks are deferred for future versions.
+### User Interface
+- **Main Window**: Directory selection, status display, action buttons
+- **Confirmation Modal**: Configuration review before execution
+- **Progress Dialog**: Real-time operation feedback
+- **Results Dialog**: Success/error summary with details
 
 ---
 
-## Out of Scope (for MVP)
+## Out of Scope (MVP)
 
-- File deletion/removal (user responsibility).
-- Advanced file corruption detection.
-- Support for non-Windows operating systems (planned for post-MVP).
-- Organization based on metadata other than creation date.
+- Custom organization templates (foundation laid for future implementation)
+- File deletion/removal capabilities
+- Advanced file corruption detection beyond basic checks
+- Undo/redo functionality (architecture supports future addition)
+- Batch operation scheduling
+
+---
+
+## Technical Architecture
+
+### Project Structure
+```
+src/
+├── core/
+│   ├── events.py          # Event system (pub/sub)
+│   ├── commands.py        # Command pattern for operations
+│   └── exceptions.py      # Custom exceptions
+├── models/
+│   ├── file_info.py       # File metadata representation
+│   ├── organization_config.py  # Organization rules/templates
+│   └── operation_result.py     # Results and error tracking
+├── services/
+│   ├── file_service.py    # File operations (move, copy, validate)
+│   ├── metadata_service.py    # File metadata reading
+│   ├── validation_service.py  # Disk space, permissions
+│   └── config_service.py      # Settings persistence (JSON)
+├── organizers/
+│   ├── base_organizer.py  # Abstract base for organization strategies
+│   ├── date_organizer.py  # Date-based organization
+│   └── template_organizer.py  # Template-based (future)
+├── gui/
+│   ├── main_window.py     # Main window orchestration
+│   ├── widgets/           # Individual UI components
+│   └── controllers/       # GUI event handlers
+├── config.py              # Configuration constants
+├── main.py                # Application entry point
+└── app_state.py           # Global application state manager
+```
+
+### Technology Stack
+- **GUI Framework**: PySide6 (Qt for Python)
+- **File Operations**: `pathlib`, `shutil`, `os`
+- **Configuration**: JSON-based settings persistence
+- **Testing**: Real file system testing with pytest
+- **Architecture Patterns**: Event-driven, Command, Observer, Strategy
 
 ---
 
 ## Data Requirements
 
-- **Source Directory Path:** User-selected folder containing files.
-- **Target Directory Path:** User-selected destination for organized files.
-- **File Metadata for Each File:**
-  - Absolute file path
-  - File name
-  - File extension/type
-  - File size
-  - Date created
-- **User Organization Preference:**
-  - Year, Year/Month, or Year/Month/Day
-- **Disk Space Information:**
-  - Total size of files to move
-  - Available space in target directory
-- **Operating System Info:** To enable OS-specific explorer opening.
+### Application State
+- Source directory path and validation status
+- Destination directory path and validation status
+- Organization configuration (current: date-based, future: templates)
+- Operation progress and status
+- Error tracking and retry queue
+
+### File Metadata
+- Absolute file path
+- File name and extension
+- File size and creation date
+- Accessibility and permission status
+- Corruption check results
+
+### Configuration Persistence
+- User preferences (JSON format)
+- Organization templates (future)
+- Application settings and window state
 
 ---
 
-## Technical Approach
+## Error Handling Strategy
 
-- **GUI Framework:** PySide6 (Qt for Python).
-- **File Operations:** `os`, `pathlib`, `shutil`
-- **Disk Space:** `shutil.disk_usage`
-- **OS Integration:** `os.startfile` for Windows Explorer.
-- **Testing:** TDD with `pytest` or `unittest`.
-- **Application Structure:** Modular monolith, with clear separation for GUI, file operations, and utility functions.
+### Critical Errors (Stop Process)
+- Insufficient disk space in destination
+- Destination path conflicts
+- Permission denied on destination directory
+
+### Non-Critical Errors (Continue with Retry Option)
+- Individual file corruption
+- Individual file permission issues
+- Network drive accessibility (future)
+
+### Error Recovery
+- Failed file paths stored for retry attempts
+- User choice: retry failed operations or skip
+- Detailed error reporting in results dialog
 
 ---
 
-## Example Test Data
+## Future Extensibility
 
-- **Source Directory:** `E:\musiic prod\Beats`
-- **Example File:** `E:\musiic prod\Beats\3phrase cmin 151 @robP.mp3`
-- **Target Directory:** `C:\Users\rober\Documents\NewDirNameHere`
-- **File Types:** `.mp3`, `.wav`, `.mp4` (not limited to these)
+### Template System Architecture
+- JSON-based organization templates
+- User-defined folder naming conventions
+- Template sharing and import/export
+- Custom metadata-based organization rules
 
----
-
-## Future Considerations
-
+### Additional Features (Post-MVP)
 - Cross-platform support (macOS, Linux)
-- More robust file integrity checks
-- User-configurable organization rules (beyond dates)
-- Automated duplicate detection
+- Advanced file integrity verification
+- Duplicate file detection and handling
+- Automated organization scheduling
+- Plugin system for custom organizers
 
 ---
 
 ## Success Criteria
 
-- User can select a source and target directory.
-- App organizes files by creation date into folders.
-- App opens Windows Explorer at target location.
-- No files are moved if there is insufficient disk space.
-- Supported file types are correctly handled.
+1. **Functional Requirements**
+   - User can select source and destination directories
+   - Files are organized by creation date into appropriate folders
+   - Real-time progress tracking during operations
+   - Comprehensive error handling and recovery
+
+2. **Technical Requirements**
+   - Components are fully decoupled and independently testable
+   - Event-driven communication between all modules
+   - Real file system testing validates actual operations
+   - JSON configuration persistence works reliably
+
+3. **User Experience**
+   - Clear visual feedback at each step
+   - Intuitive confirmation and review process
+   - Meaningful error messages and recovery options
+   - Responsive interface during file operations
 
 ---
 
-## File/Folder Structure Table
+## Testing Strategy
 
-| File/Folder         | Purpose                                                    |
-|---------------------|------------------------------------------------------------|
-| `src/main.py`       | Entry point, launches the GUI                              |
-| `src/gui.py`        | Main window, user interactions, directory selection        |
-| `src/organizer.py`  | File organization logic, moving files, folder creation     |
-| `src/file_utils.py` | File metadata reading, integrity checks, listing files     |
-| `src/os_utils.py`   | OS-specific operations (Explorer, disk space)              |
-| `src/config.py`     | Load/save user config/settings                             |
-| `tests/`            | Test suite for modules                                     |
-| `tests/test_gui.py` | Tests for GUI logic                                        |
-| `tests/test_organizer.py` | Tests for organizer logic                           |
-| `tests/test_file_utils.py`| Tests for file utils                                |
-| `tests/test_os_utils.py`  | Tests for os utils                                  |
-
----
-
-## Function Signatures, Imports, and Responsibilities
-
-### main.py
-
-```python
-from PySide6.QtWidgets import QApplication
-from gui import MainWindow
-
-def run_app() -> None:
-    """Launches the GUI."""
-```
-
----
-
-### gui.py
-
-```python
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QPushButton, QComboBox, QLabel, QVBoxLayout, QWidget
-from os_utils import open_file_explorer
-from organizer import organize_files
-from config import load_config, save_config
-
-class MainWindow(QMainWindow):
-    def init_ui(self) -> None:
-        """Sets up GUI elements."""
-
-    def select_source_directory(self) -> str:
-        """Returns the selected source directory path."""
-
-    def select_target_directory(self) -> str:
-        """Returns the selected target directory path."""
-
-    def get_granularity_selection(self) -> str:
-        """Returns granularity: 'year', 'year_month', or 'year_month_day'."""
-
-    def on_organize_clicked(self) -> None:
-        """Triggers organization process."""
-
-    def on_open_in_explorer_clicked(self, path: str) -> None:
-        """Opens the OS file explorer at the specified path."""
-```
-
----
-
-### organizer.py
-
-```python
-from file_utils import list_files_in_directory, get_file_metadata, is_file_corrupt
-from os_utils import check_disk_space
-import os
-import shutil
-
-def organize_files(source_dir: str, target_dir: str, granularity: str) -> dict:
-    """
-    Organizes files and returns a summary dict (files moved, folders created, errors).
-    """
-
-def create_organization_structure(target_dir: str, files: list, granularity: str) -> dict:
-    """
-    Maps folder paths to file lists.
-    """
-
-def move_files(mapping: dict) -> dict:
-    """
-    Moves files according to mapping, returns dict (files moved, errors).
-    """
-```
-
----
-
-### file_utils.py
-
-```python
-import os
-from pathlib import Path
-import datetime
-import mimetypes
-import stat
-
-def list_files_in_directory(directory: str) -> list:
-    """Returns a list of file paths in the directory."""
-
-def get_file_metadata(file_path: str) -> dict:
-    """Returns FileInfo dict (path, created, size, extension)."""
-
-def is_file_corrupt(file_path: str) -> bool:
-    """Quick integrity check, returns True if corrupt."""
-```
-
----
-
-### os_utils.py
-
-```python
-import os
-import platform
-import subprocess
-import shutil
-
-def open_file_explorer(path: str) -> None:
-    """Opens the file explorer at the specified path."""
-
-def get_disk_free_space(path: str) -> int:
-    """Returns free bytes at path."""
-
-def check_disk_space(target_dir: str, total_size_needed: int) -> bool:
-    """Returns True if enough space is available at target_dir."""
-```
-
----
-
-### config.py
-
-```python
-import json
-import os
-
-def load_config() -> dict:
-    """Loads user settings."""
-
-def save_config(config: dict) -> None:
-    """Saves user settings."""
-```
-
----
-
-### tests/
-
-Each test file will have test functions like:
-- `test_select_source_directory()`
-- `test_organize_files()`
-- `test_is_file_corrupt()`
-- etc.
+- **Unit Tests**: Individual component functionality
+- **Integration Tests**: Event communication and component interaction
+- **System Tests**: End-to-end user workflows with real file systems
+- **Error Tests**: Comprehensive error condition validation
+- **Performance Tests**: Large file set organization efficiency
 
 ---
