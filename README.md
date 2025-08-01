@@ -3,7 +3,7 @@
 
 ## Overview
 
-This application provides a desktop GUI for organizing files from a source directory into structured destination folders based on file metadata (creation date). The application follows an event-driven, highly decoupled architecture to maximize modularity and extensibility. Users can select directories, configure organization settings, and execute file operations with real-time progress tracking and comprehensive error handling.
+This application provides a cross-platform desktop GUI for organizing files from a source directory into structured destination folders based on file metadata and user-defined rules. The application follows an event-driven, highly decoupled architecture to maximize modularity and extensibility. Users can select directories, configure organization settings, and execute file operations with real-time progress tracking and comprehensive error handling across Windows, macOS, and Linux.
 
 ---
 
@@ -13,7 +13,7 @@ This application provides a desktop GUI for organizing files from a source direc
 2. **Source Selection** → User selects source directory containing files to organize
 3. **Destination Selection** → User selects target directory for organized files
 4. **Status Validation** → Status bar shows "Ready" (green) when both directories are selected and validated
-5. **Organization Configuration** → *Future feature: Templates and naming conventions*
+5. **Organization Configuration** → Select rule-based or date-based organization strategy
 6. **Begin Process** → User clicks "Begin" button
 7. **Confirmation Modal** → User reviews configuration and confirms or cancels
 8. **Progress Tracking** → Real-time progress bar with file count (processed/total)
@@ -46,14 +46,28 @@ The application uses a **hybrid event-driven architecture** combining:
    - Real-time status updates
 
 2. **File Organization**
-   - Date-based folder creation (Year, Year/Month, Year/Month/Day)
-   - Metadata-driven file placement
-   - Batch file operations with progress tracking
+   - **Rule-Based Organization**: Flexible rule engine with conditions and actions
+   - **Date-Based Organization**: Year, Year/Month, Year/Month/Day folder creation
+   - **Metadata-Driven Placement**: Smart file categorization using extracted metadata
+   - **Batch Operations**: Process multiple files with progress tracking
+   - **Enhanced Metadata Support**:
+     - Photo organization by camera, GPS location, technical specs
+     - Music organization by artist, album, genre, audio quality
+     - Video organization by resolution, codec, duration
+     - Document organization by author, creation date, company
+     - True file type detection for accurate categorization
 
 3. **Validation & Safety**
    - Disk space verification before operations
    - File accessibility and permission checks
    - Basic file integrity validation
+   - Cross-platform path handling and validation
+
+4. **Cross-Platform Support**
+   - Windows, macOS, and Linux compatibility
+   - OS-specific file explorer integration
+   - Platform-aware path normalization
+   - Native UI styling and behavior
 
 4. **Progress & Status Management**
    - Real-time progress tracking (processed/total files)
@@ -75,7 +89,7 @@ The application uses a **hybrid event-driven architecture** combining:
 
 ## Out of Scope (MVP)
 
-- Custom organization templates (foundation laid for future implementation)
+- Advanced rule editor interface (rules will be JSON-based initially)
 - File deletion/removal capabilities
 - Advanced file corruption detection beyond basic checks
 - Undo/redo functionality (architecture supports future addition)
@@ -95,20 +109,32 @@ src/
 ├── models/
 │   ├── file_info.py       # File metadata representation
 │   ├── organization_config.py  # Organization rules/templates
+│   ├── rule_models.py     # Rule, Condition, Action data structures
 │   └── operation_result.py     # Results and error tracking
 ├── services/
 │   ├── file_service.py    # File operations (move, copy, validate)
 │   ├── metadata_service.py    # File metadata reading
+│   ├── rule_engine.py         # Rule evaluation and processing
+│   ├── template_service.py    # Folder path template rendering
+│   ├── platform_service.py    # Cross-platform OS integration
+│   ├── exif_service.py        # Photo metadata extraction (GPS, camera data)
+│   ├── media_service.py       # Audio/video metadata analysis
+│   ├── document_service.py    # Office document metadata extraction
 │   ├── validation_service.py  # Disk space, permissions
 │   └── config_service.py      # Settings persistence (JSON)
 ├── organizers/
 │   ├── base_organizer.py  # Abstract base for organization strategies
 │   ├── date_organizer.py  # Date-based organization
+│   ├── rule_organizer.py  # Rule-based organization engine
 │   └── template_organizer.py  # Template-based (future)
 ├── gui/
 │   ├── main_window.py     # Main window orchestration
 │   ├── widgets/           # Individual UI components
-│   └── controllers/       # GUI event handlers
+│   ├── controllers/       # GUI event handlers
+│   └── platform/          # OS-specific UI adaptations
+├── utils/
+│   ├── path_utils.py      # Cross-platform path handling
+│   └── os_integration.py  # File explorer and system integration
 ├── config.py              # Configuration constants
 ├── main.py                # Application entry point
 └── app_state.py           # Global application state manager
@@ -120,6 +146,12 @@ src/
 - **Configuration**: JSON-based settings persistence
 - **Testing**: Real file system testing with pytest
 - **Architecture Patterns**: Event-driven, Command, Observer, Strategy
+- **File Analysis Libraries**:
+  - **ExifRead**: Photo metadata extraction (GPS, camera, timestamps)
+  - **Pillow (PIL)**: Image properties and validation
+  - **python-magic**: True file type detection beyond extensions
+  - **pymediainfo**: Audio/video metadata and technical specifications
+  - **python-docx/PyPDF2**: Document metadata extraction
 
 ---
 
@@ -128,7 +160,9 @@ src/
 ### Application State
 - Source directory path and validation status
 - Destination directory path and validation status
-- Organization configuration (current: date-based, future: templates)
+- Organization configuration (rule-based, date-based, or template-based)
+- Active organization rules and priorities
+- Current operating system and platform-specific settings
 - Operation progress and status
 - Error tracking and retry queue
 
@@ -138,10 +172,18 @@ src/
 - File size and creation date
 - Accessibility and permission status
 - Corruption check results
+- **Enhanced Metadata Fields**:
+  - **Photos**: GPS coordinates, camera make/model, shooting parameters
+  - **Audio**: Artist, album, genre, bitrate, duration
+  - **Video**: Resolution, codec, frame rate, duration
+  - **Documents**: Author, title, company, word/page count
+  - **True file types**: Actual format beyond file extensions
 
 ### Configuration Persistence
 - User preferences (JSON format)
-- Organization templates (future)
+- Organization rules and templates
+- Rule priorities and enabled states
+- Folder path templates and patterns
 - Application settings and window state
 
 ---
@@ -168,27 +210,39 @@ src/
 ## Future Extensibility
 
 ### Template System Architecture
-- JSON-based organization templates
+- JSON-based organization templates and rules
 - User-defined folder naming conventions
 - Template sharing and import/export
 - Custom metadata-based organization rules
+- **Rule Engine Features**:
+  - Conditional logic (AND, OR, NOT operators)
+  - Priority-based rule execution
+  - Multiple actions per rule
+  - Rule validation and conflict detection
+  - Custom folder path templates with metadata variables
 
 ### Additional Features (Post-MVP)
-- Cross-platform support (macOS, Linux)
 - Advanced file integrity verification
 - Duplicate file detection and handling
 - Automated organization scheduling
 - Plugin system for custom organizers
+- **Enhanced Organization Strategies**:
+  - Location-based organization using GPS metadata
+  - Camera/device-based categorization
+  - Content-based organization (artist, author, project)
+  - Quality-based sorting (resolution, bitrate, file size)
+  - Hybrid organization combining multiple metadata sources
 
 ---
 
 ## Success Criteria
 
 1. **Functional Requirements**
-   - User can select source and destination directories
-   - Files are organized by creation date into appropriate folders
+   - User can select source and destination directories on any supported platform
+   - Files are organized using rule-based or date-based strategies
    - Real-time progress tracking during operations
    - Comprehensive error handling and recovery
+   - Native file explorer integration on Windows, macOS, and Linux
 
 2. **Technical Requirements**
    - Components are fully decoupled and independently testable
@@ -201,6 +255,36 @@ src/
    - Intuitive confirmation and review process
    - Meaningful error messages and recovery options
    - Responsive interface during file operations
+
+---
+
+## Performance Optimizations
+
+### Threading & Concurrency
+- **Multithreading Integration**: Event-driven architecture enables easy threading addition
+- **UI Responsiveness**: Background file operations prevent interface freezing
+- **Parallel Metadata Extraction**: Concurrent processing of photos, videos, and documents
+- **I/O Optimization**: Async file operations for better resource utilization
+- **Batch Processing**: Intelligent grouping of small files vs individual large file processing
+
+### Caching Strategies
+- **Metadata Caching**: Store extracted file metadata to avoid re-processing
+- **Rule Evaluation Cache**: Cache rule results for similar file patterns
+- **Directory Structure Cache**: Avoid repeated folder creation checks
+- **File System Cache**: Cache file stats to minimize system calls
+
+### Performance Improvements
+- **Memory-Mapped Files**: Efficient handling of large files without full memory loading
+- **Database Integration**: SQLite for fast metadata and rule storage
+- **Lazy Loading**: Extract metadata only when needed
+- **Algorithmic Optimization**: Smart rule ordering and batch optimization
+- **File System Optimization**: Use optimized system calls and pre-allocation
+
+### Performance Roadmap
+1. **Phase 1**: Basic caching and batch processing (2-3x improvement)
+2. **Phase 2**: Threading and UI responsiveness (3-5x improvement)
+3. **Phase 3**: Advanced optimizations and database integration (5-10x improvement)
+4. **Phase 4**: Multiprocessing and machine learning optimization (10x+ improvement)
 
 ---
 
