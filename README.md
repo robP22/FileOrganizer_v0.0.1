@@ -1,6 +1,6 @@
 ﻿# FileOrganizer v0.0.1
 
-A **privacy-first, cross-platform desktop application** for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
+A cross-platform desktop application for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
 
 ## Overview
 
@@ -314,3 +314,4 @@ For issues, feature requests, or contributions:
 ---
 
 *FileOrganizer v0.0.1 - Privacy-first file organization for everyone*
+
