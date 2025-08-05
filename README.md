@@ -3,7 +3,14 @@
 
 ## Overview
 
-This application provides a cross-platform desktop GUI for organizing files from a source directory into structured destination folders based on file metadata and user-defined rules. The application follows an event-driven, highly decoupled architecture to maximize modularity and extensibility. Users can select directories, configure organization settings, and execute file operations with real-time progress tracking and comprehensive error handling across Windows, macOS, and Linux.
+This application provides a **privacy-first, cross-platform desktop GUI** for organizing files from a source directory into structured destination folders based on file metadata and user-defined rules. Built with **zero data collection** and **local-only processing**, FileOrganizer ensures your files and metadata never leave your computer. The application follows an event-driven, highly decoupled architecture to maximize modularity, extensibility, and security across Windows, macOS, and Linux.
+
+### 🔒 Privacy-First Features
+- **Local-Only Processing**: All operations happen entirely on your device
+- **Zero Telemetry**: No data collection, analytics, or usage tracking
+- **Granular Privacy Controls**: Choose exactly what metadata to extract
+- **No Network Dependencies**: Never connects to internet or cloud services
+- **Open Source**: Fully auditable code for transparency
 
 ---
 
