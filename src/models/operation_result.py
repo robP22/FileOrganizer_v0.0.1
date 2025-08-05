@@ -71,10 +71,10 @@ class OperationProgress:
         
         # Update performance metrics
         if self.processed_files > 0:
-            total_time              = sum(r.processing_time for r in self.results)
+            total_time               = sum(r.processing_time for r in self.results)
             self.avg_processing_time = total_time / self.processed_files
             
-            remaining_files         = self.total_files - self.processed_files
+            remaining_files          = self.total_files - self.processed_files
             self.estimated_remaining = remaining_files * self.avg_processing_time
     
     def get_failed_operations(self) -> List[FileOperationResult]:
@@ -99,13 +99,13 @@ class OperationProgress:
     def _result_to_dict(self, result: 'FileOperationResult') -> Dict[str, Any]:
         """Convert FileOperationResult to dictionary"""
         return {
-            "source_file": result.source_file,
-            "operation": result.operation,
-            "success": result.success,
-            "destination_path": result.destination_path,
-            "error_message": result.error_message,
-            "processing_time": result.processing_time,
-            "file_size": result.file_size,
-            "original_source_path": result.original_source_path,
+            "source_file":                result.source_file,
+            "operation":                  result.operation,
+            "success":                    result.success,
+            "destination_path":           result.destination_path,
+            "error_message":              result.error_message,
+            "processing_time":            result.processing_time,
+            "file_size":                  result.file_size,
+            "original_source_path":       result.original_source_path,
             "organized_destination_path": result.organized_destination_path
         }

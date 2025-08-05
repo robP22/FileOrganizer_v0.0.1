@@ -80,7 +80,10 @@ class SmartOrganizer(BaseOrganizer):
     
     def _validate_destination_path(self, destination_path: Path) -> Path:
         """Validate and return safe destination path."""
-        # Validation temporarily disabled - directories will be created safely later
+        # Validate path safety
+        if not self.validator.validate_and_sanitize_path(str(destination_path)):
+            raise ValueError(f"Invalid destination path: {destination_path}")
+        
         return destination_path
     
     def _organize_by_date_primary(self, file_path: Path, destination_root: Path, organization_date) -> Path:
@@ -116,8 +119,8 @@ class SmartOrganizer(BaseOrganizer):
         return self.file_utils.get_unique_file_path(validated_path, file_path.name)
     
     def _get_file_category(self, file_extension: str) -> str:
+        """Get file category for organization."""
         for category, extensions in self.file_type_categories.items():
             if file_extension in extensions:
                 return category
-        
         return 'Other'

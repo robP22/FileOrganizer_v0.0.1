@@ -39,7 +39,7 @@ class BaseOrganizer(ABC):
         total_files = len(file_paths)
         
         self.event_bus.publish('organization_started', {
-            'strategy': self.get_strategy_name(),
+            'strategy':    self.get_strategy_name(),
             'total_files': total_files,
             'destination': str(destination_root)
         })
@@ -51,9 +51,9 @@ class BaseOrganizer(ABC):
                 
                 progress = (self.files_processed / total_files) * 100
                 self.event_bus.publish('organization_progress', {
-                    'processed': self.files_processed,
-                    'total': total_files,
-                    'progress': progress,
+                    'processed':         self.files_processed,
+                    'total':             total_files,
+                    'progress':          progress,
                     'current_file_name': file_path.name
                 })
                 
@@ -61,22 +61,22 @@ class BaseOrganizer(ABC):
                 self.errors += 1
                 self.event_bus.publish('organization_error', {
                     'file_name': file_path.name,
-                    'error': str(e)
+                    'error':     str(e)
                 })
         
         self.event_bus.publish('organization_completed', {
-            'strategy': self.get_strategy_name(),
+            'strategy':  self.get_strategy_name(),
             'processed': self.files_processed,
-            'moved': self.files_moved,
-            'errors': self.errors
+            'moved':     self.files_moved,
+            'errors':    self.errors
         })
         
         return {
-            'strategy': self.get_strategy_name(),
+            'strategy':        self.get_strategy_name(),
             'files_processed': self.files_processed,
-            'files_moved': self.files_moved,
-            'errors': self.errors,
-            'success_rate': (self.files_moved / self.files_processed * 100) if self.files_processed > 0 else 0
+            'files_moved':     self.files_moved,
+            'errors':          self.errors,
+            'success_rate':   (self.files_moved / self.files_processed * 100) if self.files_processed > 0 else 0
         }
     
     def _validate_inputs(self, file_path: Path, destination_root: Path):
@@ -90,7 +90,6 @@ class BaseOrganizer(ABC):
     
     def _validate_security(self, file_path: Path):
         """Security validation for all organizers"""
-        # Check if we have a validator (SmartOrganizer has one)
         if hasattr(self, 'validator') and self.validator:
             if not self.validator.validate_file_extension(file_path.suffix):
                 raise ValueError(f"Dangerous file extension: {file_path.suffix}")
@@ -100,12 +99,11 @@ class BaseOrganizer(ABC):
         try:
             return self.metadata_service.extract_comprehensive_metadata(file_path)
         except Exception as e:
-            # Log the error but continue with basic metadata
+            # Log the error, continue with basic metadata
             self.event_bus.publish('metadata_extraction_failed', {
                 'file_name': file_path.name,
-                'error': str(e)
+                'error':     str(e)
             })
-            # Return basic fallback metadata
             return {
                 'type': 'unknown',
                 'creation_date': None,
@@ -113,22 +111,14 @@ class BaseOrganizer(ABC):
             }
     
     def _organize_single_file(self, file_path: Path, destination_root: Path):
-        # Step 1: Validate inputs
         self._validate_inputs(file_path, destination_root)
-        
-        # Step 2: Security validation
         self._validate_security(file_path)
-        
-        # Step 3: Extract metadata safely
+
         metadata = self._extract_metadata_safely(file_path)
-        
-        # Step 4: Get destination path
+
         destination_path = self.get_destination_path(file_path, destination_root, metadata)
-        
-        # Step 5: Create destination directory
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Step 6: Move file
         if self.file_service.move_file(str(file_path), str(destination_path)):
             self.files_moved += 1
         else:

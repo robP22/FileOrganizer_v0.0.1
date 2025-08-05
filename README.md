@@ -1,74 +1,127 @@
-﻿# FileOrganizer_v0.0.1
-# MVP Document: File Organizer Application
+﻿# FileOrganizer v0.0.1
+
+A **privacy-first, cross-platform desktop application** for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
 
 ## Overview
 
-This application provides a **privacy-first, cross-platform desktop GUI** for organizing files from a source directory into structured destination folders based on file metadata and user-defined rules. Built with **zero data collection** and **local-only processing**, FileOrganizer ensures your files and metadata never leave your computer. The application follows an event-driven, highly decoupled architecture to maximize modularity, extensibility, and security across Windows, macOS, and Linux.
+FileOrganizer provides a clean, intuitive GUI for managing file organization workflows. Built with **zero data collection** and **local-only processing**, all operations happen entirely on your device. The application features both organization (structuring messy directories) and unorganizing (flattening organized structures) capabilities with real-time progress tracking and comprehensive error handling.
 
-### 🔒 Privacy-First Features
+### 🔒 Privacy & Security Features
 - **Local-Only Processing**: All operations happen entirely on your device
-- **Zero Telemetry**: No data collection, analytics, or usage tracking
-- **Granular Privacy Controls**: Choose exactly what metadata to extract
+- **Zero Telemetry**: No data collection, analytics, or usage tracking  
+- **Granular Privacy Controls**: Configurable metadata extraction settings
 - **No Network Dependencies**: Never connects to internet or cloud services
-- **Open Source**: Fully auditable code for transparency
+- **Secure File Operations**: Path validation and permission verification
+
+### ✨ Key Features
+- **Dual Functionality**: Both organize and unorganize operations
+- **Smart Organization**: Multiple organization strategies (Smart, Date-based, Type-based)
+- **Microservice Architecture**: Decoupled, independent services
+- **Event-Driven Design**: Real-time progress and status updates
+- **Cross-Platform**: Windows, macOS, and Linux support
+- **Native File Integration**: System file manager integration
 
 ---
 
-## User Flow (MVP)
+## Current Functionality
 
-1. **Application Launch** → Main window opens
-2. **Source Selection** → User selects source directory containing files to organize
-3. **Destination Selection** → User selects target directory for organized files
-4. **Status Validation** → Status bar shows "Ready" (green) when both directories are selected and validated
-5. **Organization Configuration** → Select rule-based or date-based organization strategy
-6. **Begin Process** → User clicks "Begin" button
-7. **Confirmation Modal** → User reviews configuration and confirms or cancels
-8. **Progress Tracking** → Real-time progress bar with file count (processed/total)
-9. **Completion/Error Handling** → Results dialog shows success or error details
+### Organization Features
+- **Smart Organization**: Intelligent file placement based on metadata and file age
+- **Date-Based Organization**: Organize by year/month folder structures  
+- **Type-Based Organization**: Categorize by file type (Images, Videos, Documents, etc.)
+- **Metadata Extraction**: Photo EXIF, audio tags, document properties
+- **Progress Tracking**: Real-time operation feedback
+
+### Unorganize Features  
+- **Directory Flattening**: Unorganize any nested directory structure
+- **File Conflict Handling**: Automatic filename deduplication
+- **Recursive Processing**: Process all subdirectories
+- **Independent Microservice**: Decoupled from organization logic
+
+### User Interface
+- **Clean GUI**: Source/destination directory selection
+- **Menu Integration**: Privacy settings accessible via top menu
+- **Progress Feedback**: Real-time operation status
+- **Error Handling**: Comprehensive error reporting and recovery
+
+---
+
+## Quick Start
+
+### Installation & Setup
+1. **Clone Repository**: `git clone <repository-url>`
+2. **Install Dependencies**: `pip install -r requirements.txt`
+3. **Run Application**: `python src/main.py`
+
+### Basic Usage
+1. **Launch** the application
+2. **Select Source Directory** containing files to organize/unorganize
+3. **Select Destination Directory** for processed files
+4. **Choose Operation**:
+   - **Organize**: Click "Organize Files" for intelligent file organization
+   - **Unorganize**: Click "Unorganize" to flatten directory structures
+5. **Monitor Progress** via real-time status updates
+6. **Access Privacy Settings** via top menu for configuration
 
 ---
 
 ## Architecture Overview
 
-The application uses a **hybrid event-driven architecture** combining:
-- **Event-Driven Communication** for maximum component decoupling
-- **Command Pattern** for file operations with undo/retry capabilities
-- **Observer Pattern** for real-time progress and status updates
-- **Strategy Pattern** for future organization template extensibility
+### Current Architecture
+- **Event-Driven Communication**: Pub/sub system for component decoupling
+- **Microservice Design**: Independent services for organize/unorganize operations
+- **Strategy Pattern**: Multiple organization algorithms (Smart, Date, Type)
+- **Service Injection**: Clean dependency management
 
-### Core Principles:
-- **Maximum Decoupling**: Each component operates independently
-- **Event-Based Communication**: Components communicate via publish/subscribe events
-- **Testability**: Real file system testing with backed-up data
-- **Extensibility**: Template system for future organization strategies
+### Core Components
+- **OrganizationService**: Handles intelligent file organization
+- **UnorganizeService**: Independent directory flattening microservice  
+- **FileService**: Cross-platform file operations and validation
+- **MetadataService**: File metadata extraction and analysis
+- **GUI Layer**: PySide6-based user interface with native OS integration
 
 ---
 
-## Features (MVP)
+## Current Implementation
 
-### Core Functionality
-1. **Directory Selection**
-   - Source directory picker with validation
-   - Destination directory picker with validation
-   - Real-time status updates
+### Organization Strategies
 
-2. **File Organization**
-   - **Rule-Based Organization**: Flexible rule engine with conditions and actions
-   - **Date-Based Organization**: Year, Year/Month, Year/Month/Day folder creation
-   - **Metadata-Driven Placement**: Smart file categorization using extracted metadata
-   - **Batch Operations**: Process multiple files with progress tracking
-   - **Enhanced Metadata Support**:
-     - Photo organization by camera, GPS location, technical specs
-     - Music organization by artist, album, genre, audio quality
-     - Video organization by resolution, codec, duration
-     - Document organization by author, creation date, company
-     - True file type detection for accurate categorization
+#### Smart Organization
+- **Adaptive Logic**: Automatically selects best organization approach
+- **Recent File Handling**: Date-primary organization for files < 30 days old  
+- **Media Intelligence**: Uses rich metadata for photos/videos/audio
+- **Document Processing**: Author and date-based categorization
+- **Fallback Strategy**: Type-then-date for files without rich metadata
 
-3. **Validation & Safety**
-   - Disk space verification before operations
-   - File accessibility and permission checks
-   - Basic file integrity validation
-   - Cross-platform path handling and validation
+#### Date-Based Organization  
+- **Year/Month Structure**: `YYYY/MM/` folder hierarchy
+- **Metadata Dates**: Uses creation/modified/EXIF dates intelligently
+- **Consistent Placement**: Predictable folder structures
+
+#### Type-Based Organization
+- **Category Detection**: Images, Videos, Audio, Documents, Other
+- **Extension Mapping**: Comprehensive file type recognition  
+- **Metadata Enhancement**: Uses file content analysis beyond extensions
+
+### Unorganize Operations
+- **Directory Flattening**: Recursively processes nested structures
+- **Conflict Resolution**: Automatic filename deduplication  
+- **Progress Tracking**: Real-time processing feedback
+- **Error Handling**: Graceful handling of access issues and conflicts
+
+### File Operations
+- **Safe Moves**: Atomic file operations with validation
+- **Permission Checking**: Pre-flight validation of file access
+- **Path Normalization**: Cross-platform path handling
+- **Directory Creation**: Automatic folder structure creation
+
+### Privacy & Security
+- **Configurable Metadata**: Choose what data to extract
+- **Local Processing**: No network dependencies
+- **Validation Framework**: Input sanitization and path security
+- **Error Sanitization**: Configurable error message detail levels
+
+---
 
 4. **Cross-Platform Support**
    - Windows, macOS, and Linux compatibility
@@ -94,58 +147,55 @@ The application uses a **hybrid event-driven architecture** combining:
 
 ---
 
-## Out of Scope (MVP)
+## Technical Stack
 
-- Advanced rule editor interface (rules will be JSON-based initially)
-- File deletion/removal capabilities
-- Advanced file corruption detection beyond basic checks
-- Undo/redo functionality (architecture supports future addition)
-- Batch operation scheduling
+### Framework & Libraries
+- **GUI Framework**: PySide6 (Qt for Python) - Cross-platform native UI
+- **File Operations**: Python pathlib, shutil - Robust file system operations  
+- **Configuration**: JSON-based settings persistence
+- **Architecture**: Event-driven with microservice patterns
 
----
-
-## Technical Architecture
-
-### Project Structure
+### Current Project Structure
 ```
 src/
 ├── core/
-│   ├── events.py          # Event system (pub/sub)
-│   ├── commands.py        # Command pattern for operations
-│   └── exceptions.py      # Custom exceptions
+│   ├── events.py              # Event system (pub/sub)
+│   ├── protocols.py           # Interface definitions
+│   ├── config_interface.py    # Configuration adapter
+│   └── validation_manager.py  # Input validation framework
 ├── models/
-│   ├── file_info.py       # File metadata representation
-│   ├── organization_config.py  # Organization rules/templates
-│   ├── rule_models.py     # Rule, Condition, Action data structures
-│   └── operation_result.py     # Results and error tracking
+│   └── operation_result.py    # Results and progress tracking
 ├── services/
-│   ├── file_service.py    # File operations (move, copy, validate)
-│   ├── metadata_service.py    # File metadata reading
-│   ├── rule_engine.py         # Rule evaluation and processing
-│   ├── template_service.py    # Folder path template rendering
-│   ├── platform_service.py    # Cross-platform OS integration
-│   ├── exif_service.py        # Photo metadata extraction (GPS, camera data)
-│   ├── media_service.py       # Audio/video metadata analysis
-│   ├── document_service.py    # Office document metadata extraction
-│   ├── validation_service.py  # Disk space, permissions
-│   └── config_service.py      # Settings persistence (JSON)
+│   ├── core/
+│   │   ├── organization_service.py  # Main organization logic
+│   │   └── unorganize_service.py    # Directory flattening microservice
+│   ├── config/
+│   │   └── config_service.py        # Privacy and app configuration
+│   └── metadata/
+│       └── metadata_service.py      # File metadata extraction
 ├── organizers/
-│   ├── base_organizer.py  # Abstract base for organization strategies
-│   ├── date_organizer.py  # Date-based organization
-│   ├── rule_organizer.py  # Rule-based organization engine
-│   └── template_organizer.py  # Template-based (future)
+│   ├── base_organizer.py      # Abstract organization strategy
+│   ├── smart_organizer.py     # Intelligent file organization  
+│   ├── date_organizer.py      # Date-based organization
+│   └── type_organizer.py      # Type-based organization
+├── file_operations/
+│   ├── file_service.py        # Cross-platform file operations
+│   ├── file_utils.py          # Utility functions
+│   └── file_types.py          # File type categorization
 ├── gui/
-│   ├── main_window.py     # Main window orchestration
-│   ├── widgets/           # Individual UI components
-│   ├── controllers/       # GUI event handlers
-│   └── platform/          # OS-specific UI adaptations
-├── utils/
-│   ├── path_utils.py      # Cross-platform path handling
-│   └── os_integration.py  # File explorer and system integration
-├── config.py              # Configuration constants
-├── main.py                # Application entry point
-└── app_state.py           # Global application state manager
+│   ├── main_window.py         # Main application window
+│   └── privacy_dialog.py      # Privacy settings interface
+└── main.py                    # Application entry point
 ```
+
+### Technology Decisions
+- **PySide6**: Chosen for native OS integration and cross-platform compatibility
+- **Event-Driven Architecture**: Enables loose coupling and easier testing
+- **Microservice Pattern**: Independent services for different operations  
+- **Strategy Pattern**: Pluggable organization algorithms
+- **JSON Configuration**: Human-readable settings persistence
+
+---
 
 ### Technology Stack
 - **GUI Framework**: PySide6 (Qt for Python)
@@ -197,110 +247,70 @@ src/
 
 ## Error Handling Strategy
 
-### Critical Errors (Stop Process)
-- Insufficient disk space in destination
-- Destination path conflicts
-- Permission denied on destination directory
+## Development Status
 
-### Non-Critical Errors (Continue with Retry Option)
-- Individual file corruption
-- Individual file permission issues
-- Network drive accessibility (future)
+### Completed Features ✅
+- **Core Organization**: Smart, Date-based, and Type-based organization strategies
+- **Unorganize Functionality**: Independent microservice for directory flattening
+- **GUI Framework**: Clean PySide6 interface with source/destination selection
+- **Event System**: Pub/sub architecture for component communication
+- **Privacy Controls**: Configurable metadata extraction and privacy settings
+- **File Operations**: Safe file moving with conflict resolution
+- **Progress Tracking**: Real-time operation feedback
+- **Cross-Platform**: Windows, macOS, and Linux compatibility
 
-### Error Recovery
-- Failed file paths stored for retry attempts
-- User choice: retry failed operations or skip
-- Detailed error reporting in results dialog
+### In Development 🚧
+- **Enhanced Metadata**: Expanded photo, audio, and document metadata extraction
+- **Rule Engine**: Advanced conditional logic for file organization
+- **Error Recovery**: Comprehensive retry and recovery mechanisms
+- **Performance Optimization**: Threading and batch processing improvements
 
----
-
-## Future Extensibility
-
-### Template System Architecture
-- JSON-based organization templates and rules
-- User-defined folder naming conventions
-- Template sharing and import/export
-- Custom metadata-based organization rules
-- **Rule Engine Features**:
-  - Conditional logic (AND, OR, NOT operators)
-  - Priority-based rule execution
-  - Multiple actions per rule
-  - Rule validation and conflict detection
-  - Custom folder path templates with metadata variables
-
-### Additional Features (Post-MVP)
-- Advanced file integrity verification
-- Duplicate file detection and handling
-- Automated organization scheduling
-- Plugin system for custom organizers
-- **Enhanced Organization Strategies**:
-  - Location-based organization using GPS metadata
-  - Camera/device-based categorization
-  - Content-based organization (artist, author, project)
-  - Quality-based sorting (resolution, bitrate, file size)
-  - Hybrid organization combining multiple metadata sources
+### Future Roadmap 🚀
+- **Template System**: User-defined organization templates
+- **Duplicate Detection**: Intelligent duplicate file handling
+- **Plugin Architecture**: Custom organizer extensions
+- **Automation**: Scheduled and watch-folder operations
+- **Advanced Analytics**: Organization insights and reporting
 
 ---
 
-## Success Criteria
+## Contributing
 
-1. **Functional Requirements**
-   - User can select source and destination directories on any supported platform
-   - Files are organized using rule-based or date-based strategies
-   - Real-time progress tracking during operations
+### Getting Started
+1. **Fork** the repository
+2. **Install dependencies**: `pip install -r requirements.txt`
+3. **Run tests**: `python -m pytest tests/`
+4. **Start development**: Follow the event-driven architecture patterns
+
+### Code Style
+- **Type Hints**: Use Python type annotations
+- **Documentation**: Docstrings for all public methods
+- **Event Patterns**: Follow pub/sub patterns for component communication
+- **Testing**: Include unit tests for new functionality
+
+### Architecture Guidelines
+- **Loose Coupling**: Use dependency injection and event communication
+- **Single Responsibility**: Each service handles one primary concern
+- **Privacy First**: Maintain local-only processing principles
+- **Cross-Platform**: Ensure compatibility across operating systems
+
+---
    - Comprehensive error handling and recovery
    - Native file explorer integration on Windows, macOS, and Linux
 
-2. **Technical Requirements**
-   - Components are fully decoupled and independently testable
-   - Event-driven communication between all modules
-   - Real file system testing validates actual operations
-   - JSON configuration persistence works reliably
+## License
 
-3. **User Experience**
-   - Clear visual feedback at each step
-   - Intuitive confirmation and review process
-   - Meaningful error messages and recovery options
-   - Responsive interface during file operations
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## Performance Optimizations
+## Support
 
-### Threading & Concurrency
-- **Multithreading Integration**: Event-driven architecture enables easy threading addition
-- **UI Responsiveness**: Background file operations prevent interface freezing
-- **Parallel Metadata Extraction**: Concurrent processing of photos, videos, and documents
-- **I/O Optimization**: Async file operations for better resource utilization
-- **Batch Processing**: Intelligent grouping of small files vs individual large file processing
-
-### Caching Strategies
-- **Metadata Caching**: Store extracted file metadata to avoid re-processing
-- **Rule Evaluation Cache**: Cache rule results for similar file patterns
-- **Directory Structure Cache**: Avoid repeated folder creation checks
-- **File System Cache**: Cache file stats to minimize system calls
-
-### Performance Improvements
-- **Memory-Mapped Files**: Efficient handling of large files without full memory loading
-- **Database Integration**: SQLite for fast metadata and rule storage
-- **Lazy Loading**: Extract metadata only when needed
-- **Algorithmic Optimization**: Smart rule ordering and batch optimization
-- **File System Optimization**: Use optimized system calls and pre-allocation
-
-### Performance Roadmap
-1. **Phase 1**: Basic caching and batch processing (2-3x improvement)
-2. **Phase 2**: Threading and UI responsiveness (3-5x improvement)
-3. **Phase 3**: Advanced optimizations and database integration (5-10x improvement)
-4. **Phase 4**: Multiprocessing and machine learning optimization (10x+ improvement)
+For issues, feature requests, or contributions:
+- **GitHub Issues**: Report bugs and request features
+- **Documentation**: Comprehensive code documentation available
+- **Community**: Privacy-focused file organization community
 
 ---
 
-## Testing Strategy
-
-- **Unit Tests**: Individual component functionality
-- **Integration Tests**: Event communication and component interaction
-- **System Tests**: End-to-end user workflows with real file systems
-- **Error Tests**: Comprehensive error condition validation
-- **Performance Tests**: Large file set organization efficiency
-
----
+*FileOrganizer v0.0.1 - Privacy-first file organization for everyone*
