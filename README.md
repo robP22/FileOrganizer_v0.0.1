@@ -6,14 +6,14 @@ A cross-platform desktop application for organizing and unorganizing files with 
 
 FileOrganizer provides a clean, intuitive GUI for managing file organization workflows. Built with **zero data collection** and **local-only processing**, all operations happen entirely on your device. The application features both organization (structuring messy directories) and unorganizing (flattening organized structures) capabilities with real-time progress tracking and comprehensive error handling.
 
-### 🔒 Privacy & Security Features
+### Privacy & Security Features
 - **Local-Only Processing**: All operations happen entirely on your device
 - **Zero Telemetry**: No data collection, analytics, or usage tracking  
 - **Granular Privacy Controls**: Configurable metadata extraction settings
 - **No Network Dependencies**: Never connects to internet or cloud services
 - **Secure File Operations**: Path validation and permission verification
 
-### ✨ Key Features
+### Key Features
 - **Dual Functionality**: Both organize and unorganize operations
 - **Smart Organization**: Multiple organization strategies (Smart, Date-based, Type-based)
 - **Microservice Architecture**: Decoupled, independent services
@@ -245,11 +245,9 @@ src/
 
 ---
 
-## Error Handling Strategy
-
 ## Development Status
 
-### Completed Features ✅
+### Implemented Features
 - **Core Organization**: Smart, Date-based, and Type-based organization strategies
 - **Unorganize Functionality**: Independent microservice for directory flattening
 - **GUI Framework**: Clean PySide6 interface with source/destination selection
@@ -259,18 +257,17 @@ src/
 - **Progress Tracking**: Real-time operation feedback
 - **Cross-Platform**: Windows, macOS, and Linux compatibility
 
-### In Development 🚧
+### Current Focus
 - **Enhanced Metadata**: Expanded photo, audio, and document metadata extraction
 - **Rule Engine**: Advanced conditional logic for file organization
 - **Error Recovery**: Comprehensive retry and recovery mechanisms
 - **Performance Optimization**: Threading and batch processing improvements
 
-### Future Roadmap 🚀
+### Future Changes
 - **Template System**: User-defined organization templates
 - **Duplicate Detection**: Intelligent duplicate file handling
 - **Plugin Architecture**: Custom organizer extensions
 - **Automation**: Scheduled and watch-folder operations
-- **Advanced Analytics**: Organization insights and reporting
 
 ---
 
@@ -291,7 +288,7 @@ src/
 ### Architecture Guidelines
 - **Loose Coupling**: Use dependency injection and event communication
 - **Single Responsibility**: Each service handles one primary concern
-- **Privacy First**: Maintain local-only processing principles
+- **Privacy**: Maintain local-only processing principles
 - **Cross-Platform**: Ensure compatibility across operating systems
 
 ---
@@ -304,14 +301,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## Support
+*FileOrganizer v0.0.1 - For lazy producers that want to organize their beats (me)*
 
-For issues, feature requests, or contributions:
-- **GitHub Issues**: Report bugs and request features
-- **Documentation**: Comprehensive code documentation available
-- **Community**: Privacy-focused file organization community
-
----
-
-*FileOrganizer v0.0.1 - Privacy-first file organization for everyone*
 
