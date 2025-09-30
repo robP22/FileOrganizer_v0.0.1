@@ -9,7 +9,6 @@ import shutil
 from pathlib import Path
 import argparse
 
-
 def unorganize_directory(organized_dir: Path, output_dir: Path):
     """
     Recursively find all files in organized directory and dump them into a flat output directory.
@@ -23,7 +22,7 @@ def unorganize_directory(organized_dir: Path, output_dir: Path):
     
     # Create output directory if it doesn't exist
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     files_moved = 0
     
     # Walk through all subdirectories and find files
@@ -47,7 +46,7 @@ def unorganize_directory(organized_dir: Path, output_dir: Path):
             except Exception as e:
                 print(f"Error moving {source_file}: {e}")
     
-    print(f"\nUnorganization complete! Moved {files_moved} files to {output_dir}")
+    print(f"\nUnorganize done. Moved {files_moved} files to {output_dir}.")
     
     # Clean up empty directories
     cleanup_empty_dirs(organized_dir)
@@ -68,8 +67,8 @@ def cleanup_empty_dirs(directory: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Unorganize files back into a flat directory")
-    parser.add_argument("source", help="Organized directory to unorganize")
-    parser.add_argument("output", help="Output directory for unorganized files")
+    parser.add_argument("source", help="Directory to unorganize")
+    parser.add_argument("output", help="Directory for storage")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be moved without actually moving")
     
     args = parser.parse_args()
@@ -80,7 +79,6 @@ def main():
         return
     
     print(f"Unorganizing files from {args.source} to {args.output}")
-    print("This will move all files into a flat directory structure.")
     
     response = input("Continue? (y/N): ")
     if response.lower() != 'y':

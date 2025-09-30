@@ -6,14 +6,14 @@ A **privacy-first, cross-platform desktop application** for organizing and unorg
 
 FileOrganizer provides a clean, intuitive GUI for managing file organization workflows. Built with **zero data collection** and **local-only processing**, all operations happen entirely on your device. The application features both organization (structuring messy directories) and unorganizing (flattening organized structures) capabilities with real-time progress tracking and comprehensive error handling.
 
-### 🔒 Privacy & Security Features
+### Privacy & Security Features
 - **Local-Only Processing**: All operations happen entirely on your device
 - **Zero Telemetry**: No data collection, analytics, or usage tracking  
 - **Granular Privacy Controls**: Configurable metadata extraction settings
 - **No Network Dependencies**: Never connects to internet or cloud services
 - **Secure File Operations**: Path validation and permission verification
 
-### ✨ Key Features
+### Key Features
 - **Dual Functionality**: Both organize and unorganize operations
 - **Smart Organization**: Multiple organization strategies (Smart, Date-based, Type-based)
 - **Microservice Architecture**: Decoupled, independent services
@@ -157,6 +157,7 @@ FileOrganizer provides a clean, intuitive GUI for managing file organization wor
 
 ### Current Project Structure
 ```
+FileOrganizer Unlisted Documents/ # Extensive documentation, both AI and Human Generated
 src/
 ├── core/
 │   ├── events.py              # Event system (pub/sub)
@@ -168,17 +169,25 @@ src/
 ├── services/
 │   ├── core/
 │   │   ├── organization_service.py  # Main organization logic
-│   │   └── unorganize_service.py    # Directory flattening microservice
+│   │   ├── unorganize_service.py    # Directory flattening microservice
+│   │   └── validation_service.py    # File metadata extraction
 │   ├── config/
-│   │   └── config_service.py        # Privacy and app configuration
-│   └── metadata/
-│       └── metadata_service.py      # File metadata extraction
+│   │   ├── config_service.py        # Privacy and app configuration
+│   │   └── privacy_logger.py        # Privacy logging
+│   ├── metadata/
+│   │   ├── document_service.py      # document metadata extraction
+│   │   ├── exif_service.py          # File metadata extraction
+│   │   ├── media_service.py         # File metadata extraction
+│   │   └── metadata_service.py      # File metadata extraction
+│   ├── platform/
+│   │   └── platform_service.py      # File metadata extraction
 ├── organizers/
 │   ├── base_organizer.py      # Abstract organization strategy
 │   ├── smart_organizer.py     # Intelligent file organization  
 │   ├── date_organizer.py      # Date-based organization
 │   └── type_organizer.py      # Type-based organization
 ├── file_operations/
+│   ├── file_info.py           # File info metadata
 │   ├── file_service.py        # Cross-platform file operations
 │   ├── file_utils.py          # Utility functions
 │   └── file_types.py          # File type categorization
@@ -249,7 +258,7 @@ src/
 
 ## Development Status
 
-### Completed Features ✅
+### Completed Features
 - **Core Organization**: Smart, Date-based, and Type-based organization strategies
 - **Unorganize Functionality**: Independent microservice for directory flattening
 - **GUI Framework**: Clean PySide6 interface with source/destination selection
@@ -259,13 +268,13 @@ src/
 - **Progress Tracking**: Real-time operation feedback
 - **Cross-Platform**: Windows, macOS, and Linux compatibility
 
-### In Development 🚧
+### In Development
 - **Enhanced Metadata**: Expanded photo, audio, and document metadata extraction
 - **Rule Engine**: Advanced conditional logic for file organization
 - **Error Recovery**: Comprehensive retry and recovery mechanisms
 - **Performance Optimization**: Threading and batch processing improvements
 
-### Future Roadmap 🚀
+### Future Roadmap
 - **Template System**: User-defined organization templates
 - **Duplicate Detection**: Intelligent duplicate file handling
 - **Plugin Architecture**: Custom organizer extensions
@@ -279,8 +288,7 @@ src/
 ### Getting Started
 1. **Fork** the repository
 2. **Install dependencies**: `pip install -r requirements.txt`
-3. **Run tests**: `python -m pytest tests/`
-4. **Start development**: Follow the event-driven architecture patterns
+3. **Start development**: Follow the event-driven architecture patterns
 
 ### Code Style
 - **Type Hints**: Use Python type annotations
@@ -291,7 +299,7 @@ src/
 ### Architecture Guidelines
 - **Loose Coupling**: Use dependency injection and event communication
 - **Single Responsibility**: Each service handles one primary concern
-- **Privacy First**: Maintain local-only processing principles
+- **Security**: Maintain local-only processing principles
 - **Cross-Platform**: Ensure compatibility across operating systems
 
 ---
@@ -308,9 +316,3 @@ This project is open source and available under the [MIT License](LICENSE).
 
 For issues, feature requests, or contributions:
 - **GitHub Issues**: Report bugs and request features
-- **Documentation**: Comprehensive code documentation available
-- **Community**: Privacy-focused file organization community
-
----
-
-*FileOrganizer v0.0.1 - Privacy-first file organization for everyone*
