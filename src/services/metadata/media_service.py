@@ -12,25 +12,17 @@ except ImportError:
 
 class MediaService:
     """Service for extracting metadata from audio and video files"""
-    
     def __init__(self):
         self.audio_formats = {'.mp3', '.flac', '.m4a', '.aac', '.ogg', '.wav', '.wma'}
         self.video_formats = {'.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm'}
-    
 
     def can_extract_metadata(self, file_path: Path) -> bool:
         """Check if file is a supported media format"""
         suffix = file_path.suffix.lower()
         return (suffix in self.audio_formats or suffix in self.video_formats) and MUTAGEN_AVAILABLE
-    
 
     def extract_metadata(self, file_path: Path) -> Dict[str, Any]:
-        """
-        Extract metadata from audio/video file
-        
-        Returns:
-            Dict containing artist, album, genre, duration, quality info
-        """
+        """ Extract metadata from audio/video file. """
         if not self.can_extract_metadata(file_path):
             return {}
         
@@ -40,16 +32,12 @@ class MediaService:
                 return {}
             
             metadata = {}
-            
-            # Audio-specific metadata
             if file_path.suffix.lower() in self.audio_formats:
                 metadata.update(self._extract_audio_metadata(audiofile))
-            
-            # Video-specific metadata  
+
             if file_path.suffix.lower() in self.video_formats:
                 metadata.update(self._extract_video_metadata(audiofile))
-            
-            # Common metadata
+
             metadata.update(self._extract_common_metadata(audiofile))
             
             return metadata
@@ -57,7 +45,6 @@ class MediaService:
         except Exception as e:
             print(f"Error extracting metadata from {file_path}: {e}")
             return {}
-    
 
     def _extract_audio_metadata(self, audiofile) -> Dict[str, Any]:
         """Extract audio-specific metadata"""
@@ -96,13 +83,11 @@ class MediaService:
                 metadata['duration'] = self._format_duration(info.length)
         
         return metadata
-    
 
     def _extract_video_metadata(self, videofile) -> Dict[str, Any]:
         """Extract video-specific metadata"""
         metadata = {}
-        
-        # Video quality information
+
         if hasattr(videofile, 'info'):
             info = videofile.info
             if hasattr(info, 'bitrate'):
@@ -112,13 +97,12 @@ class MediaService:
                 metadata['duration'] = self._format_duration(info.length)
         
         return metadata
-    
+
 
     def _extract_common_metadata(self, mediafile) -> Dict[str, Any]:
         """Extract metadata common to both audio and video"""
         metadata = {}
-        
-        # File format information
+
         if hasattr(mediafile, 'mime'):
             metadata['format'] = mediafile.mime[0] if mediafile.mime else 'unknown'
         
@@ -141,8 +125,7 @@ class MediaService:
     def get_organization_date(self, file_path: Path) -> Optional[datetime]:
         """Get the best date for organizing this media file"""
         metadata = self.extract_metadata(file_path)
-        
-        # Try to parse date from metadata
+
         if 'date' in metadata:
             try:
                 # Handle various date formats
@@ -155,7 +138,6 @@ class MediaService:
             except Exception:
                 pass
         
-        # Fallback to file modification time
         try:
             stat_result = file_path.stat()
             return datetime.fromtimestamp(stat_result.st_mtime)
@@ -166,10 +148,8 @@ class MediaService:
     def get_organization_info(self, file_path: Path) -> Dict[str, str]:
         """Get key information for file organization"""
         metadata = self.extract_metadata(file_path)
-        
         org_info = {}
-        
-        # For music files
+
         if file_path.suffix.lower() in self.audio_formats:
             if 'artist' in metadata:
                 org_info['artist'] = metadata['artist']
@@ -177,8 +157,7 @@ class MediaService:
                 org_info['album'] = metadata['album']
             if 'genre' in metadata:
                 org_info['genre'] = metadata['genre']
-        
-        # For video files
+
         if file_path.suffix.lower() in self.video_formats:
             if 'duration_seconds' in metadata:
                 duration = metadata['duration_seconds']

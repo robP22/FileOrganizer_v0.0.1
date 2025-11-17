@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Quick and dirty unorganizer script for testing purposes.
-Unorganizes organized directory structure back into a single messy folder.
-"""
-
 import os
 import shutil
 from pathlib import Path
@@ -11,7 +5,8 @@ import argparse
 
 def unorganize_directory(organized_dir: Path, output_dir: Path):
     """
-    Recursively find all files in organized directory and dump them into a flat output directory.
+    Walk through every subdirectory and move the files into the parent,
+    effectively flattening the directory.
     """
     organized_dir = Path(organized_dir)
     output_dir    = Path(output_dir)
@@ -24,14 +19,11 @@ def unorganize_directory(organized_dir: Path, output_dir: Path):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     files_moved = 0
-    
-    # Walk through all subdirectories and find files
     for root, dirs, files in os.walk(organized_dir):
         for file in files:
             source_file      = Path(root) / file
             destination_file = output_dir / file
-            
-            # Handle filename conflicts by adding counter
+
             counter = 1
             while destination_file.exists():
                 stem             = Path(file).stem
@@ -40,30 +32,40 @@ def unorganize_directory(organized_dir: Path, output_dir: Path):
                 counter += 1
             
             try:
-                shutil.move(str(source_file), str(destination_file))
+                shutil.move(source_file, destination_file)
                 print(f"Moved: {source_file} -> {destination_file}")
                 files_moved += 1
             except Exception as e:
                 print(f"Error moving {source_file}: {e}")
     
     print(f"\nUnorganize done. Moved {files_moved} files to {output_dir}.")
-    
-    # Clean up empty directories
     cleanup_empty_dirs(organized_dir)
 
-
-def cleanup_empty_dirs(directory: Path):
+def cleanup_empty_dirs(directory: Path, retries: int):
     """Remove empty directories after unorganizing."""
-    for root, dirs, files in os.walk(directory, topdown=False):
-        for dir_name in dirs:
-            dir_path = Path(root) / dir_name
-            try:
-                if not any(dir_path.iterdir()):  # Directory is empty
-                    dir_path.rmdir()
-                    print(f"Removed empty directory: {dir_path}")
-            except OSError:
-                pass  # Directory not empty or other error
+    retries: int = 3 # maximum retries
+    if os.path.exists(directory):
+        try:
+            shutil.rmtree(directory)
+            print(f"Directory: [ {directory} ] has been removed along with its contents.")
+        except Exception as e:
+            print(f"An error has occurred when removing the directory tree: \n->{e}")
+            print(f"Trying again with maximum of 3 retries: {retries=}")
+            if retries > 0:
+                cleanup_empty_dirs(directory, retries - 1)
+    else:
+        print(f"OS path does not exist -> [ {directory} ]")
 
+    # ---- The code below removes each subdirectory if it has no contents. ----
+    # for root, dirs, files in os.walk(directory, topdown=False):
+    #     for dir_name in dirs:
+    #         dir_path = Path(root) / dir_name
+    #         try:
+    #             if not any(dir_path.iterdir()):  # Directory is empty
+    #                 dir_path.rmdir()
+    #                 print(f"Removed empty directory: {dir_path}")
+    #         except OSError:
+    #             pass  # Directory not empty or other error
 
 def main():
     parser = argparse.ArgumentParser(description="Unorganize files back into a flat directory")
@@ -86,7 +88,6 @@ def main():
         return
     
     unorganize_directory(Path(args.source), Path(args.output))
-
 
 if __name__ == "__main__":
     main()

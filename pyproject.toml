@@ -1,0 +1,17 @@
+[project]
+name = "fileorganizer-v0-0-1"
+version = "0.1.0"
+description = "Local, Privacy-focused file organizer."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "exifread==3.0.0",
+    "mutagen==1.47.0",
+    "pillow==10.4.0",
+    "pypdf2==3.0.1",
+    "pyside6==6.9.1",
+    "pyside6-addons==6.9.1",
+    "pyside6-essentials==6.9.1",
+    "python-docx==1.1.2",
+    "shiboken6==6.9.1",
+]

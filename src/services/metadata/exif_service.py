@@ -15,30 +15,20 @@ from services.config.privacy_logger import privacy_logger
 
 class ExifService:
     """Service for extracting EXIF metadata from images"""
-    
     def __init__(self):
         self.supported_formats = {'.jpg', '.jpeg', '.tiff', '.tif', '.cr2', '.nef', '.arw', '.dng'}
-    
 
     def can_extract_metadata(self, file_path: Path) -> bool:
         """Check if file is a supported image format"""
         return file_path.suffix.lower() in self.supported_formats and EXIF_AVAILABLE
-    
 
     def extract_metadata(self, file_path: Path) -> Dict[str, Any]:
-        """
-        Extract comprehensive EXIF metadata from image file
-        
-        Returns:
-            Dict containing camera info, GPS, dates, technical specs
-        """
+        """ Extract comprehensive EXIF metadata from image file. """
         if not self.can_extract_metadata(file_path):
             return {}
         
         metadata = {}
-        
         try:
-            # Use PIL for basic EXIF data
             with Image.open(file_path) as img:
                 exifdata = img.getexif()
                 
@@ -63,7 +53,6 @@ class ExifService:
             privacy_logger.log_error("ExifService", "extract_metadata", e, str(file_path))
         
         return metadata
-    
 
     def _extract_camera_info(self, exifdata) -> Dict[str, str]:
         """Extract camera make, model, lens info"""
@@ -82,7 +71,6 @@ class ExifService:
             camera_info['lens_model'] = str(exifdata[42036])
         
         return camera_info
-    
 
     def _extract_gps_info(self, exifdata) -> Optional[Dict[str, float]]:
         """Extract GPS coordinates if available"""
@@ -97,13 +85,12 @@ class ExifService:
                 return d + (m / 60.0) + (s / 3600.0)
             
             gps_data = {}
-            
             if 2 in gps_info and 1 in gps_info:  # Latitude
                 lat = convert_to_degrees(gps_info[2])
                 if gps_info[1] == 'S':
                     lat = -lat
                 gps_data['latitude'] = lat
-            
+
             if 4 in gps_info and 3 in gps_info:  # Longitude
                 lon = convert_to_degrees(gps_info[4])
                 if gps_info[3] == 'W':
@@ -117,11 +104,9 @@ class ExifService:
         
         except Exception:
             return None
-    
 
     def _extract_date_taken(self, exifdata) -> Optional[datetime]:
         """Extract the date photo was taken"""
-        # Try different date fields
         date_tags = [36867, 36868, 306]  # DateTimeOriginal, DateTimeDigitized, DateTime
         
         for tag in date_tags:
@@ -133,49 +118,38 @@ class ExifService:
                     continue
         
         return None
-    
 
     def _extract_technical_specs(self, exifdata) -> Dict[str, Any]:
         """Extract technical photography specs"""
         specs = {}
-        
-        # ISO
-        if 34855 in exifdata:
+        if 34855 in exifdata: # ISO
             specs['iso'] = int(exifdata[34855])
-        
-        # Aperture
-        if 33437 in exifdata:  # FNumber
+
+        if 33437 in exifdata:  # Aperture
             specs['aperture'] = f"f/{float(exifdata[33437])}"
-        
-        # Shutter speed
-        if 33434 in exifdata:  # ExposureTime
+
+        if 33434 in exifdata:  # Shutter speed, Exposure time
             exposure = exifdata[33434]
             if exposure < 1:
                 specs['shutter_speed'] = f"1/{int(1/exposure)}"
             else:
                 specs['shutter_speed'] = f"{exposure}s"
-        
-        # Focal length
-        if 37386 in exifdata:
+
+        if 37386 in exifdata: # Focal length
             specs['focal_length'] = f"{float(exifdata[37386])}mm"
-        
-        # Image dimensions
+
         if 256 in exifdata and 257 in exifdata:  # ImageWidth, ImageLength
             specs['width'] = int(exifdata[256])
             specs['height'] = int(exifdata[257])
         
         return specs
-    
 
     def get_organization_date(self, file_path: Path) -> Optional[datetime]:
         """Get the best date for organizing this image"""
         metadata = self.extract_metadata(file_path)
-        
-        # Prefer date taken from EXIF
         if 'date_taken' in metadata:
             return metadata['date_taken']
         
-        # Fallback to file modification time
         try:
             stat_result = file_path.stat()
             return datetime.fromtimestamp(stat_result.st_mtime)

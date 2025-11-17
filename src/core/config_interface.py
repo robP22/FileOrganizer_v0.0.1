@@ -1,13 +1,8 @@
-"""
-Configuration interface to decouple components from direct config access.
-"""
 from typing import Any
 from core.protocols import ConfigProvider
 
-
 class ConfigAdapter(ConfigProvider):
     """Adapter that wraps the existing privacy_config to provide interface"""
-    
     def __init__(self, config_instance):
         self._config = config_instance
     

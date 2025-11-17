@@ -1,15 +1,9 @@
-"""
-Shared protocols for dependency injection and decoupling.
-Consolidates all protocol definitions to prevent duplication.
-"""
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict
 
-
 class MetadataExtractor(ABC):
     """Protocol for metadata extraction services"""
-    
     @abstractmethod
     def extract_metadata(self, file_path: Path) -> Dict[str, Any]:
         """Extract metadata from a file"""
@@ -18,7 +12,6 @@ class MetadataExtractor(ABC):
 
 class ConfigProvider(ABC):
     """Abstract interface for configuration access"""
-    
     @abstractmethod
     def get_privacy_setting(self, key: str) -> Any:
         """Get a privacy setting value"""

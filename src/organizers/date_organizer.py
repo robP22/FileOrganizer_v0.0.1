@@ -1,9 +1,6 @@
-from datetime import datetime
 from pathlib  import Path
 from typing   import Dict
-
 from .base_organizer import BaseOrganizer
-
 
 class DateOrganizer(BaseOrganizer):
     def get_strategy_name(self) -> str:
@@ -19,7 +16,6 @@ class DateOrganizer(BaseOrganizer):
         
         year_folder  = organization_date.strftime("%Y")
         month_folder = organization_date.strftime("%m")
-        
         destination_folder = destination_root / year_folder / month_folder
         
         return self.file_utils.get_unique_file_path(destination_folder, file_path.name)

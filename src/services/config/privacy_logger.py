@@ -1,12 +1,9 @@
-import os
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
-
 class PrivacyLogger:
     """Privacy-focused logging service that sanitizes sensitive information"""
-    
     def __init__(self, enable_debug: bool = False):
         self.enable_debug = enable_debug
         self.user_home = str(Path.home())
@@ -15,26 +12,15 @@ class PrivacyLogger:
         """Replace sensitive path information with generic placeholders"""
         if not path_str:
             return "EMPTY_PATH"
-        
-        # Replace user home directory
+
         sanitized = path_str.replace(self.user_home, "<USER_HOME>")
-        
-        # Replace common sensitive directories
-        sensitive_replacements = {
-            "/Users/": "/Users/<USER>/",
-            "C:\\Users\\": "C:\\Users\\<USER>\\",
-            "/home/": "/home/<USER>/",
-            "Documents": "<DOCUMENTS>",
-            "Desktop": "<DESKTOP>",
-            "Downloads": "<DOWNLOADS>",
-            "Pictures": "<PICTURES>",
-            "Music": "<MUSIC>",
-            "Videos": "<VIDEOS>"
-        }
+        sensitive_replacements = { "/Users/": "/Users/<USER>/", "C:\\Users\\": "C:\\Users\\<USER>\\",
+                "/home/": "/home/<USER>/", "Documents": "<DOCUMENTS>", "Desktop": "<DESKTOP>",
+                "Downloads": "<DOWNLOADS>", "Pictures": "<PICTURES>", "Music": "<MUSIC>",
+                "Videos": "<VIDEOS>" }
         
         for sensitive, replacement in sensitive_replacements.items():
             if sensitive in sanitized:
-                # Only replace the first occurrence to avoid over-sanitization
                 sanitized = sanitized.replace(sensitive, replacement, 1)
         
         return sanitized
@@ -65,5 +51,4 @@ class PrivacyLogger:
             print(f"[{timestamp}] {component}: {message}")
 
 
-# Global privacy logger instance
 privacy_logger = PrivacyLogger(enable_debug=False)  # Disabled by default for privacy

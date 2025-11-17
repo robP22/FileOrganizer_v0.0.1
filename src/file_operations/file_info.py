@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from datetime    import datetime
 from pathlib     import Path
-from typing      import Dict, Any, Optional, List
-
+from typing      import Dict, Any, Optional
 
 @dataclass
 class FileInfo:
@@ -10,10 +9,8 @@ class FileInfo:
     Comprehensive file information model.
     Used by organizers to make intelligent organization decisions.
     """
-    
-    # Basic file properties
-    path:       Path
-    name:       str
+    path: Path
+    name: str
     extension:  str
     size_bytes: int
     
@@ -23,7 +20,7 @@ class FileInfo:
     accessed_date: Optional[datetime] = None
     
     # File type categorization
-    file_type: str           = "unknown"  # images, documents, videos, audio, etc.
+    file_type: str = "unknown"  # images, documents, videos, audio, etc.
     mime_type: Optional[str] = None
     
     # Metadata extracted from file content
@@ -35,11 +32,10 @@ class FileInfo:
     organization_priority: int = 0  # Higher = organize first
     
     def __post_init__(self):
-        """Initialize computed fields after dataclass creation"""
+        """ Initialize computed fields after dataclass creation. """
         if self.metadata is None:
             self.metadata  = {}
-        
-        # Extract basic info from path if not provided
+
         if not self.name:
             self.name      = self.path.name
         if not self.extension:
@@ -47,14 +43,14 @@ class FileInfo:
     
     @classmethod
     def from_path(cls, file_path: Path) -> "FileInfo":
-        """Create FileInfo from a file path with basic information"""
+        """ Create FileInfo from a file path with basic information. """
         try:
             stat = file_path.stat()
             return cls(
-                path         =file_path,
-                name         =file_path.name,
-                extension    =file_path.suffix.lower(),
-                size_bytes   =stat.st_size,
+                path=file_path,
+                name=file_path.name,
+                extension =file_path.suffix.lower(),
+                size_bytes=stat.st_size,
                 created_date =datetime.fromtimestamp(stat.st_ctime),
                 modified_date=datetime.fromtimestamp(stat.st_mtime),
                 accessed_date=datetime.fromtimestamp(stat.st_atime)
@@ -62,8 +58,8 @@ class FileInfo:
         except OSError:
             # Return minimal info if file access fails
             return cls(
-                path      =file_path,
-                name      =file_path.name,
+                path=file_path,
+                name=file_path.name,
                 extension =file_path.suffix.lower(),
                 size_bytes=0
             )

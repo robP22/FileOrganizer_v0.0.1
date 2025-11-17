@@ -1,28 +1,24 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
-                               QCheckBox, QGroupBox, QPushButton, QTextEdit,
-                               QComboBox, QSpinBox, QFormLayout)
+        QCheckBox, QGroupBox, QPushButton, QTextEdit, QComboBox, QSpinBox, QFormLayout)
 from PySide6.QtCore import Qt
 from core.protocols import ConfigProvider
 
-
 class PrivacySettingsDialog(QDialog):
     """Privacy and security settings configuration dialog"""
-    
     def __init__(self, parent=None, config_provider: ConfigProvider = None):
         super().__init__(parent)
         self.config_provider = config_provider
         self.setWindowTitle("Privacy & Security Settings")
         self.setModal(True)
         self.setMinimumSize(500, 600)
-        
         self.setup_ui()
         self.load_current_settings()
     
     def setup_ui(self):
         """Setup the user interface"""
         layout = QVBoxLayout(self)
-        
-        # Privacy Controls Section
+
+        ## -- Privacy group setup -- ##
         privacy_group = QGroupBox("Privacy Controls")
         privacy_layout = QFormLayout(privacy_group)
         
@@ -35,10 +31,10 @@ class PrivacySettingsDialog(QDialog):
         privacy_layout.addRow("Error Sanitization:", self.sanitize_errors_cb)
         privacy_layout.addRow("Local Only Mode:", self.local_only_cb)
         privacy_layout.addRow("Secure Deletion:", self.secure_delete_cb)
-        
+
         layout.addWidget(privacy_group)
-        
-        # Metadata Extraction Controls
+
+        ## -- Metadata group setup -- ##
         metadata_group = QGroupBox("Metadata Extraction")
         metadata_layout = QFormLayout(metadata_group)
         
@@ -56,7 +52,7 @@ class PrivacySettingsDialog(QDialog):
         
         layout.addWidget(metadata_group)
         
-        # Security Controls
+        ## -- Security group setup -- ##
         security_group = QGroupBox("Security Settings")
         security_layout = QFormLayout(security_group)
         
@@ -83,8 +79,8 @@ class PrivacySettingsDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         
-        self.reset_button = QPushButton("Reset to Defaults")
-        self.apply_button = QPushButton("Apply Settings")
+        self.reset_button  = QPushButton("Reset to Defaults")
+        self.apply_button  = QPushButton("Apply Settings")
         self.cancel_button = QPushButton("Cancel")
         
         self.reset_button.clicked.connect(self.reset_to_defaults)
@@ -101,15 +97,13 @@ class PrivacySettingsDialog(QDialog):
         # Connect signals to update summary
         self.connect_signals()
     
-    def connect_signals(self):
+    def connect_signals(self) -> None:
         """Connect checkboxes to update privacy summary"""
-        checkboxes = [
-            self.enable_debug_cb, self.sanitize_errors_cb, self.local_only_cb,
-            self.secure_delete_cb, self.extract_gps_cb, self.extract_camera_cb,
-            self.extract_personal_cb, self.cache_metadata_cb, self.clear_cache_cb,
-            self.validate_paths_cb, self.block_system_cb, self.confirm_paths_cb,
-            self.symlink_protection_cb, self.scan_executables_cb
-        ]
+        checkboxes = [ self.enable_debug_cb, self.sanitize_errors_cb, self.local_only_cb,
+                self.secure_delete_cb,       self.extract_gps_cb,     self.extract_camera_cb,
+                self.extract_personal_cb,    self.cache_metadata_cb,  self.clear_cache_cb,
+                self.validate_paths_cb,      self.block_system_cb,    self.confirm_paths_cb,
+                self.symlink_protection_cb,  self.scan_executables_cb ]
     
     def load_current_settings(self):
         """Load current settings from privacy config"""

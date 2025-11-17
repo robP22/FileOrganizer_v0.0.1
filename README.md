@@ -1,6 +1,6 @@
 ﻿# FileOrganizer v0.0.1
 
-A **privacy-first, cross-platform desktop application** for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
+A **privacy-focused, cross-platform desktop application** for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
 
 ## Overview
 
@@ -50,8 +50,10 @@ FileOrganizer provides a clean, intuitive GUI for managing file organization wor
 
 ### Installation & Setup
 1. **Clone Repository**: `git clone <repository-url>`
-2. **Install Dependencies**: `pip install -r requirements.txt`
-3. **Run Application**: `python src/main.py`
+2. **Install Uv**: `pip install uv`
+3. **Initialize Uv**: `uv init`
+4. **Install Dependencies**: `uv sync`
+5. **Run Application**: `python3 src/main.py` or `python src/main.py`
 
 ### Basic Usage
 1. **Launch** the application
@@ -157,7 +159,6 @@ FileOrganizer provides a clean, intuitive GUI for managing file organization wor
 
 ### Current Project Structure
 ```
-FileOrganizer Unlisted Documents/ # Extensive documentation, both AI and Human Generated
 src/
 ├── core/
 │   ├── events.py              # Event system (pub/sub)
@@ -194,6 +195,8 @@ src/
 ├── gui/
 │   ├── main_window.py         # Main application window
 │   └── privacy_dialog.py      # Privacy settings interface
+├── pyproject.toml             # Environment and dependencies
+├── README.md                  # Application documentation
 └── main.py                    # Application entry point
 ```
 
@@ -284,17 +287,21 @@ src/
 ---
 
 ## Contributing
+    Please contact me before beginning development.
 
 ### Getting Started
 1. **Fork** the repository
-2. **Install dependencies**: `pip install -r requirements.txt`
-3. **Start development**: Follow the event-driven architecture patterns
+2. **Install Uv**: `pip install uv`
+3. **Initialize Uv**: `uv init`
+4. **Install Dependencies**: `uv sync`
+5. **Start development**: Follow the event-driven architecture patterns
 
 ### Code Style
 - **Type Hints**: Use Python type annotations
 - **Documentation**: Docstrings for all public methods
 - **Event Patterns**: Follow pub/sub patterns for component communication
 - **Testing**: Include unit tests for new functionality
+  - Test files were previously uncommited and no longer exist due to memory loss
 
 ### Architecture Guidelines
 - **Loose Coupling**: Use dependency injection and event communication

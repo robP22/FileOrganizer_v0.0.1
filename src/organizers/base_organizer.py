@@ -1,19 +1,18 @@
 from abc       import ABC, abstractmethod
-from datetime  import datetime
 from pathlib   import Path
-from typing    import Dict, List, Optional, Tuple, Any
-
+from typing    import Dict, List, Any
 
 class BaseOrganizer(ABC):
     def __init__(self, metadata_service, file_service, event_bus, file_utils=None):
         self.metadata_service = metadata_service
         self.file_service     = file_service
-        self.event_bus        = event_bus
         self.file_utils       = file_utils or self._get_default_file_utils()
-        self.files_processed  = 0
-        self.files_moved      = 0
-        self.errors           = 0
-    
+        self.event_bus        = event_bus
+
+        self.errors = 0
+        self.files_processed = 0
+        self.files_moved     = 0
+
     def _get_default_file_utils(self):
         """Lazy load file utilities to reduce coupling"""
         from file_operations import file_utils
@@ -37,12 +36,9 @@ class BaseOrganizer(ABC):
         destination_root.mkdir(parents=True, exist_ok=True)
         
         total_files = len(file_paths)
-        
-        self.event_bus.publish('organization_started', {
-            'strategy':    self.get_strategy_name(),
-            'total_files': total_files,
-            'destination': str(destination_root)
-        })
+        self.event_bus.publish('organization_started',
+                { 'strategy': self.get_strategy_name(), 'total_files': total_files,
+                  'destination': str(destination_root) })
         
         for file_path in file_paths:
             try:
@@ -50,34 +46,21 @@ class BaseOrganizer(ABC):
                 self.files_processed += 1
                 
                 progress = (self.files_processed / total_files) * 100
-                self.event_bus.publish('organization_progress', {
-                    'processed':         self.files_processed,
-                    'total':             total_files,
-                    'progress':          progress,
-                    'current_file_name': file_path.name
-                })
-                
+                self.event_bus.publish('organization_progress',
+                        { 'processed': self.files_processed, 'total': total_files,
+                          'progress': progress, 'current_file_name': file_path.name })
             except Exception as e:
                 self.errors += 1
-                self.event_bus.publish('organization_error', {
-                    'file_name': file_path.name,
-                    'error':     str(e)
-                })
+                self.event_bus.publish('organization_error',
+                        { 'file_name': file_path.name, 'error': str(e) })
         
-        self.event_bus.publish('organization_completed', {
-            'strategy':  self.get_strategy_name(),
-            'processed': self.files_processed,
-            'moved':     self.files_moved,
-            'errors':    self.errors
-        })
+        self.event_bus.publish('organization_completed',
+                { 'strategy': self.get_strategy_name(), 'processed': self.files_processed,
+                  'moved': self.files_moved, 'errors': self.errors })
         
-        return {
-            'strategy':        self.get_strategy_name(),
-            'files_processed': self.files_processed,
-            'files_moved':     self.files_moved,
-            'errors':          self.errors,
-            'success_rate':   (self.files_moved / self.files_processed * 100) if self.files_processed > 0 else 0
-        }
+        return { 'strategy': self.get_strategy_name(), 'files_processed': self.files_processed,
+                 'files_moved': self.files_moved, 'errors': self.errors,
+                 'success_rate': (self.files_moved / self.files_processed * 100) if self.files_processed > 0 else 0 }
     
     def _validate_inputs(self, file_path: Path, destination_root: Path):
         """Common input validation for all organizers"""
@@ -100,22 +83,17 @@ class BaseOrganizer(ABC):
             return self.metadata_service.extract_comprehensive_metadata(file_path)
         except Exception as e:
             # Log the error, continue with basic metadata
-            self.event_bus.publish('metadata_extraction_failed', {
-                'file_name': file_path.name,
-                'error':     str(e)
-            })
-            return {
-                'type': 'unknown',
-                'creation_date': None,
-                'modification_date': file_path.stat().st_mtime
-            }
+            self.event_bus.publish('metadata_extraction_failed',
+                    { 'file_name': file_path.name, 'error': str(e) })
+
+            return { 'type': 'unknown', 'creation_date': None,
+                     'modification_date': file_path.stat().st_mtime }
     
     def _organize_single_file(self, file_path: Path, destination_root: Path):
         self._validate_inputs(file_path, destination_root)
         self._validate_security(file_path)
 
-        metadata = self._extract_metadata_safely(file_path)
-
+        metadata         = self._extract_metadata_safely(file_path)
         destination_path = self.get_destination_path(file_path, destination_root, metadata)
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         

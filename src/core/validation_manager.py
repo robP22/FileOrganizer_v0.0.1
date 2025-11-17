@@ -1,15 +1,10 @@
-"""
-Manager and registry for ValidationService to eliminate duplicate instances.
-"""
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from services.core.validation_service import ValidationService
 
-
 class ValidationServiceManager:
     """Manager for managing ValidationService instances"""
-    
     _instance: Optional['ValidationService'] = None
     
     @classmethod

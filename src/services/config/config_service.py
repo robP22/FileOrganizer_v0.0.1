@@ -2,8 +2,7 @@ import json
 import os
 from core.protocols import ConfigProvider
 from pathlib import Path
-from typing  import Dict, Any, Optional
-
+from typing  import Dict, Any
 
 class PrivacyConfig(ConfigProvider):
     def __init__(self):
@@ -13,49 +12,32 @@ class PrivacyConfig(ConfigProvider):
         
         # Default privacy-first settings
         self.default_config  = {
-            "privacy": {
-                "enable_debug_logging":         False,
-                "sanitize_error_messages":      True,
-                "local_only_mode":              True,
-                "minimize_metadata_collection": False,
-                "secure_delete_temp_files":     True,
-                "disable_crash_reporting":      True
-            },
-            "security": {
-                "validate_all_paths":           True,
-                "block_system_directories":     True,
-                "require_path_confirmation":    True,
-                "enable_symlink_protection":    True,
-                "maximum_file_size_mb":         100,
-                "scan_for_executables":         True
-            },
-            "metadata": {
-                "extract_gps_location":         True,  # User choice for photos
-                "extract_camera_info":          True,
-                "extract_personal_info":        True,  # Author names, etc.
-                "cache_metadata_locally":       True,
-                "clear_cache_on_exit":          False
-            },
-            "ui": {
-                "show_file_paths_in_ui":        True,
-                "confirm_sensitive_operations": True,
-                "remember_directory_choices":   False,  # Privacy-focused default
-                "auto_save_window_state":       False
-            },
-            "organization": {
-                "default_strategy": "smart",
-                "create_date_folders": True,
-                "preserve_folder_structure": False,
-                "file_extensions": {
-                    "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"],
-                    "documents": [".pdf", ".doc", ".docx", ".txt", ".rtf"],
-                    "videos": [".mp4", ".avi", ".mov", ".mkv", ".wmv"],
-                    "audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"]
-                }
+                "privacy":
+                    { "enable_debug_logging": False, "sanitize_error_messages": True,
+                      "local_only_mode": True, "minimize_metadata_collection": False,
+                      "secure_delete_temp_files": True, "disable_crash_reporting": True },
+                "security":
+                    { "validate_all_paths": True, "block_system_directories": True,
+                      "require_path_confirmation": True, "enable_symlink_protection": True,
+                      "maximum_file_size_mb": 100, "scan_for_executables": True },
+                "metadata":
+                    { "extract_gps_location": True, "extract_camera_info": True,
+                      "extract_personal_info": True, "cache_metadata_locally": True,
+                      "clear_cache_on_exit": False },
+                "ui":
+                    { "show_file_paths_in_ui": True, "confirm_sensitive_operations": True,
+                      "remember_directory_choices": False, "auto_save_window_state": False },
+                "organization":
+                    { "default_strategy": "smart", "create_date_folders": True,
+                      "preserve_folder_structure": False,
+                "file_extensions":
+                    { "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"],
+                      "documents": [".pdf", ".doc", ".docx", ".txt", ".rtf"],
+                      "videos": [".mp4", ".avi", ".mov", ".mkv", ".wmv"],
+                      "audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"] }
             }
         }
-        
-        self.config          = self.load_config()
+        self.config = self.load_config()
     
     def ensure_config_dir(self) -> None:
         """Create config directory with appropriate permissions"""
@@ -77,7 +59,7 @@ class PrivacyConfig(ConfigProvider):
                 user_config  = json.load(f)
             
             # Merge with defaults to ensure all keys exist
-            config           = self.default_config.copy()
+            config = self.default_config.copy()
             self._deep_merge(config, user_config)
             return config
             
@@ -166,15 +148,14 @@ class PrivacyConfig(ConfigProvider):
     
     def get_privacy_summary(self) -> str:
         """Get human-readable privacy summary for user"""
-        privacy = self.config.get("privacy", {})
+        privacy  = self.config.get("privacy", {})
+        metadata = self.config.get("metadata", {})
         
-        summary = "🔒 Privacy Settings Summary:\n"
+        summary  = "Privacy Settings Summary:\n"
         summary += f"  • Debug Logging: {'Enabled' if privacy.get('enable_debug_logging') else 'Disabled'}\n"
         summary += f"  • Local Only Mode: {'Yes' if privacy.get('local_only_mode') else 'No'}\n"
         summary += f"  • Error Message Sanitization: {'Yes' if privacy.get('sanitize_error_messages') else 'No'}\n"
         summary += f"  • Secure Temp File Deletion: {'Yes' if privacy.get('secure_delete_temp_files') else 'No'}\n"
-        
-        metadata = self.config.get("metadata", {})
         summary += f"  • GPS Location Extraction: {'Yes' if metadata.get('extract_gps_location') else 'No'}\n"
         summary += f"  • Personal Info Extraction: {'Yes' if metadata.get('extract_personal_info') else 'No'}\n"
         

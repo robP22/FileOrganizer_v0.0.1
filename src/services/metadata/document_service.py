@@ -16,15 +16,15 @@ except ImportError:
 
 
 class DocumentService:
-    """Service for extracting metadata from document files"""
-    
+    """ Service for extracting metadata from document files. """
+
     def __init__(self):
         self.office_formats = {'.docx', '.xlsx', '.pptx'}
         self.pdf_formats = {'.pdf'}
         self.text_formats = {'.txt', '.md', '.rtf'}
     
     def can_extract_metadata(self, file_path: Path) -> bool:
-        """Check if file is a supported document format"""
+        """ Check if file is a supported document format. """
         suffix = file_path.suffix.lower()
         return (
             (suffix in self.office_formats and DOCX_AVAILABLE) or
@@ -35,7 +35,6 @@ class DocumentService:
     def extract_metadata(self, file_path: Path) -> Dict[str, Any]:
         """
         Extract metadata from document file
-        
         Returns:
             Dict containing author, creation date, company, title, etc.
         """
@@ -43,7 +42,6 @@ class DocumentService:
             return {}
         
         suffix = file_path.suffix.lower()
-        
         try:
             if suffix == '.docx':
                 return self._extract_docx_metadata(file_path)
@@ -63,7 +61,6 @@ class DocumentService:
             return {}
         
         metadata = {}
-        
         try:
             doc = Document(file_path)
             core_props = doc.core_properties
@@ -123,7 +120,6 @@ class DocumentService:
             return {}
         
         metadata = {}
-        
         try:
             with open(file_path, 'rb') as file:
                 pdf_reader = PyPDF2.PdfReader(file)
@@ -190,7 +186,6 @@ class DocumentService:
                 # Try to detect if it's a specific format
                 if file_path.suffix.lower() == '.md':
                     metadata['format'] = 'Markdown'
-                    # Count headers
                     headers = [line for line in lines if line.startswith('#')]
                     metadata['header_count'] = len(headers)
                 
@@ -203,13 +198,11 @@ class DocumentService:
         """Get the best date for organizing this document"""
         metadata = self.extract_metadata(file_path)
         
-        # Try creation date from metadata
         if 'created_date' in metadata and isinstance(metadata['created_date'], datetime):
             return metadata['created_date']
         
         if 'creation_date' in metadata:
             try:
-                # Parse PDF date format
                 date_str = metadata['creation_date']
                 if date_str.startswith('D:'):
                     date_str = date_str[2:16]  # Extract YYYYMMDDHHMMSS
