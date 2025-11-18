@@ -1,10 +1,10 @@
-﻿# FileOrganizer v0.0.1
+﻿# AutoOrg v0.1.0
 
 A **privacy-focused, cross-platform desktop application** for organizing and unorganizing files with intelligent metadata-based categorization and flexible organization strategies.
 
 ## Overview
 
-FileOrganizer provides a clean, intuitive GUI for managing file organization workflows. Built with **zero data collection** and **local-only processing**, all operations happen entirely on your device. The application features both organization (structuring messy directories) and unorganizing (flattening organized structures) capabilities with real-time progress tracking and comprehensive error handling.
+AutoOrg provides a clean, intuitive GUI for managing file organization workflows. Built with **zero data collection** and **local-only processing**, all operations happen entirely on your device. The application features both organization (structuring messy directories) and unorganizing (flattening organized structures) capabilities with real-time progress tracking and comprehensive error handling.
 
 ### Privacy & Security Features
 - **Local-Only Processing**: All operations happen entirely on your device
@@ -50,10 +50,12 @@ FileOrganizer provides a clean, intuitive GUI for managing file organization wor
 
 ### Installation & Setup
 1. **Clone Repository**: `git clone <repository-url>`
-2. **Install Uv**: `pip install uv`
-3. **Initialize Uv**: `uv init`
+2. **Install Python 3.9.6**: `brew install python@3.9`
+3. **Create the Virtual Environment**: `python3.9 -m venv .venv`
+4. **Optional Upgrade Pip**: `python3 -m pip install --upgrade pip`
+3. **Install Uv**: `pip install uv`
 4. **Install Dependencies**: `uv sync`
-5. **Run Application**: `python3 src/main.py` or `python src/main.py`
+5. **Run Application**: `python3 src/main.py` 
 
 ### Basic Usage
 1. **Launch** the application
